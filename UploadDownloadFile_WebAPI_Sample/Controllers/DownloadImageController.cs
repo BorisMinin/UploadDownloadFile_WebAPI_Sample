@@ -21,12 +21,12 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
         public async Task<IActionResult> DownloadIm(string filename)
         {
             var path = Path.GetFullPath("./wwwroot/upload/" + filename);
-            MemoryStream memory = new MemoryStream();
+            MemoryStream memory = new MemoryStream(); //чтение вводимых данных из массива или запись выводимых данных в массив
             using (FileStream FileStream = new FileStream(path, FileMode.Open))
             {
                 await FileStream.CopyToAsync(memory);
             }
-            memory.Position = 0;
+            memory.Position = 0; //Текующая позиция в потоке (очистка)
             return File(memory, "image/jpg", Path.GetFileName(path));
         }
     }

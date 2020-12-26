@@ -35,7 +35,7 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
                 (_environment.WebRootPath + "\\Upload\\" + objFile.files.FileName))
             {
                 objFile.files.CopyTo(FileStream);
-                FileStream.Flush();
+                FileStream.Flush();// Очищает буферы для этого потока и вызывает запись всех буферизованных данных в файл
                 return "added file " + objFile.files.FileName;
             }
         }
