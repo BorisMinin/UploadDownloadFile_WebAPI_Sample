@@ -19,8 +19,12 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
             _environment = environment;
         }
 
-        //Chose image from directory and upload it on server
-        //https://localhost:44382/api/UploadImage
+        //https://localhost:44325/api/UploadImage
+        /// <summary>
+        /// Chose image from directory and upload it on server
+        /// </summary>
+        /// <param name="objFile">file that was selected for upload</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<string> ImageUpload([FromForm] UploadImage_Model objFile)
         {
