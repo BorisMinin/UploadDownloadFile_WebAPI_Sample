@@ -8,6 +8,6 @@ namespace UploadDownloadFile_WebAPI_Sample.Models
 {
     public class UploadImage_Model
     {
-        public IFormFile files { get; set; }
+        public IFormFile File { get; set; }
     }
 }

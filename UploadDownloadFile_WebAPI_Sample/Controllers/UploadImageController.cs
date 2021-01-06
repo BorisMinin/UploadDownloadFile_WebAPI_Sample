@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -32,12 +33,54 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
                 Directory.CreateDirectory(_environment.WebRootPath + "\\Upload\\");
 
             await using (FileStream FileStream = System.IO.File.Create
-                (_environment.WebRootPath + "\\Upload\\" + objFile.files.FileName))
+                (_environment.WebRootPath + "\\Upload\\" + objFile.File.FileName))
             {
-                objFile.files.CopyTo(FileStream);
+                objFile.File.CopyTo(FileStream);
                 FileStream.Flush();// Очищает буферы для этого потока и вызывает запись всех буферизованных данных в файл
-                return "added file " + objFile.files.FileName;
+                return "added file " + objFile.File.FileName;
+            }
+        }
+        public async Task<IActionResult> Upload([FromForm] IFormFile file)
+        {
+            if (file != null)
+            {
+                // готовим структуру данных для операции
+                string root = _environment.WebRootPath;
+                string folder = "\\Upload\\";
+                string path = root + folder;
+                string fileName = file.FileName;
+
+                // готовим окружение для операции
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                // выполняем операцию
+                await using (FileStream FileStream = File.Create(path + fileName))
+                {
+                    file.CopyTo(FileStream);
+
+                    try
+                    {
+                        FileStream.Flush();// Очищает буферы для этого потока и вызывает запись всех буферизованных данных в файл
+                        string result = fileName + DateTime.Now.ToLongDateString();
+
+                        return new StatusCodeResult(200);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        return new StatusCodeResult(404);
+                    }
+                    catch (PathTooLongException)
+                    {
+                        return new StatusCodeResult(500);
+                    }
+                }
+            }
+            else
+            {
+                return new StatusCodeResult(204);
             }
         }
     }
+
 }
