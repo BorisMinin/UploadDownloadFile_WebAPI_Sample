@@ -6,16 +6,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using UploadDownloadFile_WebAPI_Sample.Models;
 
 namespace UploadDownloadFile_WebAPI_Sample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImageController : ControllerBase
+    public class FileController : ControllerBase
     {
         public static IWebHostEnvironment _environment;
-        public ImageController(IWebHostEnvironment environment)
+        public FileController(IWebHostEnvironment environment)
         {
             _environment = environment;
         }
@@ -26,7 +25,7 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
         /// <param name="file">file that was selected for upload</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file)
+        public async Task<IActionResult> UploadImage([FromForm] IFormFile file)
         {
             if (file != null)
             {
@@ -41,14 +40,14 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
                     Directory.CreateDirectory(path);
 
                 // выполняем операцию
-                await using (FileStream FileStream = System.IO.File.Create(path + fileName))
+                using (FileStream FileStream = System.IO.File.Create(path + fileName))
                 {
-                    file.CopyTo(FileStream);
+                    await file.CopyToAsync(FileStream);
 
                     try
                     {
+                        string result = fileName + DateTime.Now.ToLongDateString(); //добавить UTS
                         FileStream.Flush();// Очищает буферы для этого потока и вызывает запись всех буферизованных данных в файл
-                        string result = fileName + DateTime.Now.ToLongDateString();
 
                         return new StatusCodeResult(200);
                     }
@@ -66,15 +65,14 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
                 return new StatusCodeResult(204);
         }
 
-
-        //https://localhost:44325/api/DownloadImage/FILENAME.TYPEFILE      
+        //https://localhost:44325/api/Download/FILENAME.TYPEFILE      
         /// <summary>
         /// Downloading selected image from server
         /// </summary>
         /// <param name="filename">filename for download</param>
         /// <returns></returns>
         [HttpGet("{filename}")]
-        public async Task<IActionResult> DownloadIm(string filename)
+        public async Task<IActionResult> DownloadImage(string filename)
         {
             var path = Path.GetFullPath("./wwwroot/upload/" + filename);
             MemoryStream memory = new MemoryStream(); //чтение вводимых данных из массива или запись выводимых данных в массив
