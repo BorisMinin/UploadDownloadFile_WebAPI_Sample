@@ -51,13 +51,13 @@ namespace UploadDownloadFile_WebAPI_Sample.Controllers
 
                         return new StatusCodeResult(200);
                     }
-                    catch (FileNotFoundException)
+                    catch (IOException) // Исключение, Ошибка ввода/вывода
                     {
-                        return new StatusCodeResult(404);
+                        return new StatusCodeResult(500); // ошибка сервера
                     }
-                    catch (PathTooLongException)
+                    catch (ObjectDisposedException) // Исключение, поток закрыт.
                     {
-                        return new StatusCodeResult(500);
+                        return new StatusCodeResult(500); // ошибка сервера
                     }
                 }
             }
